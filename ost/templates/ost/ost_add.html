@@ -1,0 +1,242 @@
+{% extends 'base_layout.html' %}
+{% block content %}
+    <div class="container">
+        <div>Add New OST</div>
+        <form class="site-form" action="{% url 'ost:add' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row blackblock">
+                <div class="col-lg-6">
+                    <table>
+                        <tr>
+                            <td>Title:</td>
+                            <td class="form-text-area">{{ form.title }}</td>
+                        </tr>
+                        <tr class="slug">
+                            <td class="slug">Slug:</td>
+                            <td class="form-text-area">{{ form.slug }}</td>
+                        </tr>
+                        <tr>
+                            <td>Sub Title:</td>
+                            <td class="form-text-area">{{ form.sub_title }}</td>
+                        </tr>
+                        <tr>
+                            <td>Release Date:</td>
+                            <td>
+                                <table>
+                                    <tr><td class="form-text-area-date">{{ form.release_date }}</td></tr>
+                                    <tr><td class="date_add_txt">YYYY-MM-DD</td></tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Artists:</td>
+                            <td class="form-text-area">{{ form.artists }}</td>
+                        </tr>
+                        <tr>
+                            <td>Publisher:</td>
+                            <td class="form-text-area">{{ form.label }}</td>
+                        </tr>
+                        <tr>
+                            <td>Platforms:</td>
+                            <td>
+                                <select name="platforms" class="selectpicker" multiple data-live-search="true">
+                                {% for platforms in platforms %}
+                                    <option value="{{ platforms.id }}">{{ platforms.title }}</option>
+                                {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                    <hr class="style2 style-white">
+                    <table>
+                        <tr>
+                            <td>Games:</td>
+                            <td>
+                                <select name="games" class="selectpicker" multiple data-live-search="true">
+                                {% for games in games %}
+                                    <option value="{{ games.id }}">{{ games.title }}</option>
+                                {% endfor %}
+                                </select>
+                            </td>
+                            <td><a><button>Add Game</button></a></td>
+                        </tr>
+                        <tr>
+                            <td>Animations:</td>
+                            <td>
+                                <select name="animations" class="selectpicker" multiple data-live-search="true">
+                                {% for animations in animations %}
+                                    <option value="{{ animations.id }}">{{ animations.title }}</option>
+                                {% endfor %}
+                                </select>
+                            </td>
+                            <td><a><button>Add Animation</button></a></td>
+                        </tr>
+                    </table>
+                    <hr class="style2 style-white">
+                    <p>Tracklist:</p>
+                    {{ form.tracklist }}
+                </div>
+                <div class="col-lg-6">
+                    <p>Cover:</p>
+                    {{ form.cover }}
+                    <hr class="style2 style-white">
+                    <table class="mt-8">
+                        <tr>
+                            <td>Classification:</td>
+                            <td>{{ form.class_game }}</td>
+                            <td class="mr-1">Game</td>
+                            <td>{{ form.class_animation }}</td>
+                            <td>Animation</td>
+                        </tr>
+                    </table>
+                    <select name="types" class="selectpicker" multiple data-live-search="true">
+                        {% for types in types %}
+                            <option value="{{ types.id }}">{{ types.type_name }}</option>
+                        {% endfor %}
+                        </select>
+                    <hr class="style2 style-white">
+                    <h4>Available at Links</h4>
+                    <table>
+                        <tr>
+                            <td>Amazon html</td>
+                            <td></td>
+                            <td>{{ form.amazon_html }}</td>
+                        </tr>
+                        <tr>
+                            <td>Amazon</td>
+                            <td></td>
+                            <td>{{ form.amazon_link }}</td>
+                        </tr>
+                        <tr>
+                            <td>Amazon JP</td>
+                            <td></td>
+                            <td>{{ form.amazon_jp }}</td>
+                        </tr>
+                        <tr>
+                            <td>Play Asia</td>
+                            <td></td>
+                            <td>{{ form.play_asia_link }}</td>
+                        </tr>
+                        <tr>
+                            <td>CD Japan</td>
+                            <td></td>
+                            <td>{{ form.cd_japan_link }}</td>
+                        </tr>
+                        <tr>
+                            <td>Spotify</td>
+                            <td></td>
+                            <td>{{ form.spotify_link }}</td>
+                        </tr>
+                        <tr>
+                            <td>Google Play</td>
+                            <td></td>
+                            <td>{{ form.google_play }}</td>
+                        </tr>
+                        <tr>
+                            <td>Steam</td>
+                            <td></td>
+                            <td>{{ form.steam }}</td>
+                        </tr>
+                        <tr>
+                            <td>Mora</td>
+                            <td></td>
+                            <td>{{ form.mora }}</td>
+                        </tr>
+                        <tr>
+                            <td>iTunes</td>
+                            <td></td>
+                            <td>{{ form.itunes }}</td>
+                        </tr>
+                        <tr>
+                            <td>Ototoy</td>
+                            <td></td>
+                            <td>{{ form.ototoy }}</td>
+                        </tr>
+                        <tr>
+                            <td>Custom Link 1 - </td>
+                            <td>Name:</td>
+                            <td>{{ form.other_link_site_1 }}</td>
+                            <td>Link:</td>
+                            <td>{{ form.other_link_1 }}</td>
+                        </tr>
+                        <tr>
+                            <td>Custom Link 2 - </td>
+                            <td>Name:</td>
+                            <td>{{ form.other_link_site_2 }}</td>
+                            <td>Link:</td>
+                            <td>{{ form.other_link_2 }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-lg-12">
+                    <hr class="style2 style-white">
+                    <h4>Downloads Links</h4>
+                    <h5>MP3</h5>
+                    <table>
+                        <tr>
+                            <td>Download Link 1</td>
+                            <td>{{  form.download_link_choices_1 }}</td>
+                            <td>Normal Link:</td>
+                            <td>{{ form.download_link_1 }}</td>
+                            <td>SoC Custom Link:</td>
+                            <td>{{ form.download_link_1_soc }}</td>
+                        </tr>
+                        <tr>
+                            <td>Download Link 2</td>
+                            <td>{{  form.download_link_choices_2 }}</td>
+                            <td>Normal Link:</td>
+                            <td>{{ form.download_link_2 }}</td>
+                            <td>SoC Custom Link:</td>
+                            <td>{{ form.download_link_2_soc }}</td>
+                        </tr>
+                        <tr>
+                            <td>Download Link 3</td>
+                            <td>{{  form.download_link_choices_3 }}</td>
+                            <td>Normal Link:</td>
+                            <td>{{ form.download_link_3 }}</td>
+                            <td>SoC Custom Link:</td>
+                            <td>{{ form.download_link_3_soc }}</td>
+                        </tr>
+                    </table>
+                    <h5>FLAC</h5>
+                    <table>
+                        <tr>
+                            <td>Download Link 1</td>
+                            <td>{{  form.download_link_choices_1_flac }}</td>
+                            <td>Normal Link:</td>
+                            <td>{{ form.download_link_1_flac }}</td>
+                            <td>SoC Custom Link:</td>
+                            <td>{{ form.download_link_1_soc_flac }}</td>
+                        </tr>
+                        <tr>
+                            <td>Download Link 2</td>
+                            <td>{{  form.download_link_choices_2_flac }}</td>
+                            <td>Normal Link:</td>
+                            <td>{{ form.download_link_2_flac }}</td>
+                            <td>SoC Custom Link:</td>
+                            <td>{{ form.download_link_2_soc_flac }}</td>
+                        </tr>
+                        <tr>
+                            <td>Download Link 3</td>
+                            <td>{{  form.download_link_choices_3_flac }}</td>
+                            <td>Normal Link:</td>
+                            <td>{{ form.download_link_3_flac }}</td>
+                            <td>SoC Custom Link:</td>
+                            <td>{{ form.download_link_3_soc_flac }}</td>
+                        </tr>
+                    </table>
+                    <hr class="style2 style-white">
+                    <h4>Releated Osts</h4>
+                    <select name="releated_osts" class="selectpicker" multiple data-live-search="true">
+                        {% for releated_osts in releated_osts %}
+                            <option value="{{ releated_osts.id }}">{{ releated_osts.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <input type="submit" value="Post">
+            </div>
+        </form>
+    </div>
+    <script src="/static/slugify.js"></script>
+    <script>$(function() {$('select').selectpicker();})</script>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base_layout.html' %}
+{% block content %}
+    <h1>Platforms list</h1>
+    <div class="articles">
+        {% for platform in platform %}
+            <div class="ost">
+                <h2><a href="/platform/{{platform.slug}}">{{ platform.title }}</a></h2>
+            </div>
+        {% endfor %}
+        
+    </div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base_layout.html' %}
+{% block content %}
+<div class="container"></div>
+    <h1>Soundtracks list</h1>
+    <div class="links-list w-100 m-3">
+        {% for ost in ost %}
+            <div class="ost-list-items">
+                <a href="/ost/{{ost.slug}}">
+                <div class=".ost-list-items-bg">
+                    <p><img class="ost-list-img" src="{{ost.cover.url}}"></p>
+                    <div class="ost-list-text text-wrap">
+                    {{ ost.title }}
+                    </div>  
+                </div>
+                </a>
+            </div>
+        {% endfor %}
+        
+    </div>
+</div>
+{% endblock %}

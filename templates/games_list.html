@@ -1,0 +1,12 @@
+{% extends 'base_layout.html' %}
+{% block content %}
+    <h1>Games list</h1>
+    <div class="articles">
+        {% for game in game %}
+            <div class="ost">
+                <h2><a href="/game/{{game.slug}}">{{ game.title }}</a></h2>
+            </div>
+        {% endfor %}
+        
+    </div>
+{% endblock %}
