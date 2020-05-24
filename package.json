@@ -1,0 +1,51 @@
+{
+  "name": "soc_site_rework",
+  "version": "1.0.0",
+  "repository": "https://github.com/jorgev259/soc_site_rework",
+  "author": "jorgev259 <jorgev259@outlook.es>",
+  "license": "MIT",
+  "dependencies": {
+    "@apollo/react-hooks": "^3.1.5",
+    "@babel/core": "^7.9.6",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-react": "^7.9.4",
+    "@fortawesome/fontawesome-free": "^5.13.0",
+    "apollo-boost": "^0.4.9",
+    "bootstrap": "^4.5.0",
+    "cra-template": "1.0.3",
+    "customize-cra": "^0.9.1",
+    "dotenv": "^8.2.0",
+    "graphql": "^15.0.0",
+    "graphql-tag": "^2.10.3",
+    "http-proxy-middleware": "^0.20.0",
+    "jquery": "^3.5.1",
+    "react": "^16.13.1",
+    "react-app-rewired": "^2.1.5",
+    "react-dom": "^16.13.1",
+    "react-scripts": "3.4.1",
+    "react-select": "^3.1.0",
+    "reactstrap": "^8.4.1"
+  },
+  "scripts": {
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "standard": {
+    "parser": "babel-eslint"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
