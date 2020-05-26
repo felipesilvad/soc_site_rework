@@ -41,10 +41,12 @@ module.exports = (sequelize, DataTypes) => {
   Ost.hasMany(LinkCategory)
   Ost.hasMany(Disc)
 
-  Ost.associate = models => Ost.belongsToMany(models.artist, { through: 'Ost_Artist' })
-  Ost.associate = models => Ost.belongsToMany(models.class, { through: 'Ost_Class' })
-  Ost.associate = models => Ost.belongsToMany(models.type, { through: 'Ost_Type' })
-  Ost.associate = models => Ost.belongsToMany(models.platform, { through: 'Ost_Platform' })
-  Ost.associate = models => Ost.belongsToMany(models.game, { through: 'Ost_Game' })
+  Ost.associate = models => {
+    Ost.belongsToMany(models.artist, { through: 'Ost_Artist' })
+    Ost.belongsToMany(models.class, { through: 'Ost_Class' })
+    Ost.belongsToMany(models.type, { through: 'Ost_Type' })
+    Ost.belongsToMany(models.platform, { through: 'Ost_Platform' })
+    Ost.belongsToMany(models.game, { through: 'Ost_Game' })
+  }
   return Ost
 }

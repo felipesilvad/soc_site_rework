@@ -14,8 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     freezeTableName: true
   }
   )
-  Game.associate = models => Game.belongsToMany(models.publisher, { through: 'Publisher_Game' })
-  Game.associate = models => Game.belongsToMany(models.ost, { through: 'Ost_Game' })
-  Game.associate = models => Game.belongsToMany(models.series, { through: 'Series_Game' })
+  Game.associate = models => {
+    Game.belongsToMany(models.publisher, { through: 'Publisher_Game' })
+    Game.belongsToMany(models.ost, { through: 'Ost_Game' })
+    Game.belongsToMany(models.series, { through: 'Series_Game' })
+  }
   return Game
 }
