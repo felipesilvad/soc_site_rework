@@ -65,6 +65,7 @@ module.exports = `
     type Publisher {
         id:ID!
         name: String
+        games: [Game]
     }
 
     type Series {
@@ -91,12 +92,27 @@ module.exports = `
         games: [Game!]!
     }
 
+    input SeriesInput {
+        slug: String
+    }
+
+    input PublisherInput {
+        id: ID
+    }
+
+    input GameInput {
+        slug:String
+        name:String
+        publishers:[PublisherInput]
+        series:[SeriesInput]
+    }
+
     type Mutation {
         createArtist(name: String): Artist!
         createPlatform(name: String): Platform!
         createPublisher(name: String): Publisher!
         createSeries(slug: String, name:String): Series!
-        createGame(slug:String, name:String, publishers:[ID], series:[ID]): Game!
+        createGame(slug:String, name:String, publishers:[ID], series:[String]): Game!
         createOst(
             title: String, 
             subTitle: String, 

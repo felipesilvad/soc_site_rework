@@ -29,23 +29,39 @@ export default class AddGame extends React.Component {
   }
 
   handleSubmitForm = (e) => {
+    const { slug, name, publishers, series } = e.target.elements
+    const game = {
+      name: name.value,
+      slug: slug.value,
+      series: this.selectToArray(series).map(s => { return { slug: s } }),
+      publishers: this.selectToArray(publishers).map(p => { return { id: p } })
+    }
     const query = gql`
-    mutation CreateGame($slug:String!, $name:String!, $series: [ID]!, $publishers:[ID]!){
+    mutation CreateGame($slug:String!, $name:String!, $series: [SeriesInput]!, $publishers:[PublisherInput]!){
       createGame(
         name: $name
         slug: $slug
         series: $series
-        publishers: $publishers
-      ) {
-        slug
-        name
+        publishers: $publishers        
+        ) {
+          slug
+          name
+          publishers {
+            id
+            name
+          }
+          series {
+            slug
+            name
+          }
+        }
       }
-    }
-    
 `
-    const { slug, name, publishers, series } = e.target.elements
-    console.log({ slug: slug.value, name: name.value, publishers: this.selectToArray(publishers), series: this.selectToArray(series) })
-    this.props.client.mutate({ mutation: query, variables: { slug: slug.value, name: name.value, publishers: this.selectToArray(publishers), series: this.selectToArray(series.value) } }).then(results => {
+    console.log(game)
+    this.props.client.mutate({
+      mutation: query,
+      variables: game
+    }).then(results => {
       console.log(results)
     }).catch(console.log)
     e.preventDefault()

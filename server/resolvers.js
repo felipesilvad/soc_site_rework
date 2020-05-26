@@ -10,7 +10,16 @@ module.exports = {
   },
 
   Game: {
-    series: (parent, args, context, info) => parent.getSeries()
+    series: (parent, args, context, info) => parent.getSeries(),
+    publishers: (parent, args, context, info) => parent.getPublishers()
+  },
+
+  Series: {
+    games: (parent, args, context, info) => parent.getGames()
+  },
+
+  Publisher: {
+    games: (parent, args, context, info) => parent.getGames()
   },
 
   Query: {
@@ -44,26 +53,15 @@ module.exports = {
     },
     createGame: async (parent, data, { db }, info) => {
       console.log(data)
-      const result = await db.game.create(data)
-      return result.dataValues
+      const game = await db.game.create(data)
+
+      await game.setSeries(data.series)
+      await game.setPublishers(data.publishers)
+
+      return game.dataValues
     },
-    createOst: (parent, {
-      title, subTitle, cover, releaseDate,
-      label, links, artists, classes,
-      types, platforms, games
-    }, { db }, info) =>
-      console.log({
-        title: title,
-        subTitle: subTitle,
-        cover: cover,
-        releaseDate: releaseDate,
-        label: label,
-        links: links,
-        artists: artists,
-        classes: classes,
-        types: types,
-        platforms: platforms,
-        games: games
-      })
+    createOst: (parent, data, { db }, info) => {
+      console.log(data)
+    }
   }
 }
