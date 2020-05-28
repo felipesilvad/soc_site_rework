@@ -3,6 +3,7 @@ import gql from 'graphql-tag'
 import Select from 'react-select'
 import serialize from 'form-serialize'
 import { Button, Col, Row, Form, FormGroup, Label, Input } from 'reactstrap'
+import { toast } from 'react-toastify'
 import getBase64 from './getBase64'
 
 export class Links extends React.Component {
@@ -29,7 +30,7 @@ export class Links extends React.Component {
                 <Col md={6}>
                   <FormGroup className='mt-3'>
                     <Label>Category {category + 1} title:</Label>
-                    <Input name='links[][title]' type='text' />
+                    <Input required name='links[][title]' type='text' />
                   </FormGroup>
                 </Col>
                 <Col md={6} className='mt-auto'>
@@ -51,13 +52,13 @@ export class Links extends React.Component {
                   <Col md={6}>
                     <FormGroup>
                       <Label>Provider:</Label>
-                      <Input name={`links[${category}][links][${link}][provider]`} type='text' />
+                      <Input required name={`links[${category}][links][${link}][provider]`} type='text' />
                     </FormGroup>
                   </Col>
                   <Col md={6}>
                     <FormGroup>
                       <Label>Url:</Label>
-                      <Input name={`links[${category}][links][${link}][url]`} type='text' />
+                      <Input required name={`links[${category}][links][${link}][url]`} type='text' />
                     </FormGroup>
                   </Col>
                 </Row>
@@ -71,7 +72,16 @@ export class Links extends React.Component {
 }
 
 export default class AddOst extends React.Component {
-  state = { osts: [], games: [], platforms: [], classes: [], types: [], discs: 0, loading: false }
+  state = {
+    ostLoading: false,
+    osts: [],
+    games: [],
+    platforms: [],
+    classes: [],
+    types: [],
+    discs: 0,
+    loading: false
+  }
 
   componentDidMount () {
     const query = gql`
@@ -91,22 +101,22 @@ export default class AddOst extends React.Component {
         games {
           slug
           name
-        }    
-        osts {
-          id
-          title
-        }    
+        }        
       }
     `
     this.props.client.query({ query }).then(results => {
       this.setState(results.data)
+    }).catch(err => {
+      console.log(err)
+      toast.error('Failed to fetch server info')
     })
+
+    this.handleOstChange('')
   }
 
   handleSubmitForm = async (e) => {
-    e.preventDefault()
     e.persist()
-
+    e.preventDefault()
     const data = serialize(e.target, { hash: true })
 
     data.artists = data.artists.split(',')
@@ -160,10 +170,42 @@ export default class AddOst extends React.Component {
       variables: data
     }).then(results => {
       console.log(results)
+      toast.success(`Added "${data.title}" succesfully!`)
+      e.target.reset()
     }).catch(err => {
       console.log(err)
+      toast.error(err.message, { autoclose: false })
     }).finally(() => this.setState({ loading: false }))
     this.setState({ loading: true })
+  }
+
+  handleOstChange = newValue => {
+    this.setState({ ostLoading: true }, () => {
+      const queryString = newValue === '' ? `
+      query RecentOst($limit: Int!){
+        recentOst(limit: $limit) {
+          id
+          title
+        }
+      }
+    ` : `
+    query SearchOst($title: String){
+      searchOstByTitle(title: $title) {
+        id
+        title
+      }
+    }
+  `
+      const query = gql`${queryString}`
+      this.props.client.query({ query, variables: { title: newValue, limit: 10 } }).then(results => {
+        const data = results.data.searchOstByTitle || results.data.recentOst
+        this.setState({ osts: data, ostLoading: false })
+      }).catch(err => {
+        console.log(err)
+        this.setState({ ostLoading: false })
+        toast.error('Failed to fetch server info')
+      })
+    })
   }
 
   render () {
@@ -175,7 +217,7 @@ export default class AddOst extends React.Component {
             <Col md={12}>
               <FormGroup>
                 <Label>Disc {i + 1}:</Label>
-                <Input name='discs[][body]' type='textarea' />
+                <Input required name='discs[][body]' type='textarea' />
               </FormGroup>
             </Col>
           </Row>
@@ -191,25 +233,25 @@ export default class AddOst extends React.Component {
             <Col md={3}>
               <FormGroup>
                 <Label for='title'>Title:</Label>
-                <Input type='text' name='title' />
+                <Input required type='text' name='title' />
               </FormGroup>
             </Col>
             <Col md={3}>
               <FormGroup>
                 <Label for='subTitle'>Sub Title:</Label>
-                <Input type='text' name='subTitle' />
+                <Input required type='text' name='subTitle' />
               </FormGroup>
             </Col>
             <Col md={3}>
               <FormGroup>
                 <Label for='releaseDate'>Release Date:</Label>
-                <Input type='date' name='releaseDate' pattern='\d{4}-\d{2}-\d{2}' />
+                <Input required type='date' name='releaseDate' pattern='\d{4}-\d{2}-\d{2}' />
               </FormGroup>
             </Col>
             <Col md={3}>
               <FormGroup>
                 <Label for='label'>Label:</Label>
-                <Input type='text' name='label' />
+                <Input required type='text' name='label' />
               </FormGroup>
             </Col>
           </Row>
@@ -218,7 +260,7 @@ export default class AddOst extends React.Component {
             <Col md={4}>
               <FormGroup>
                 <Label for='artists'>Artists:</Label>
-                <Input name='artists' type='textarea' />
+                <Input required name='artists' type='textarea' />
               </FormGroup>
             </Col>
 
@@ -253,7 +295,7 @@ export default class AddOst extends React.Component {
             <Col md={4}>
               <FormGroup>
                 <Label for='cover'>Cover:</Label>
-                <Input name='cover' type='file' accept='image/*' />
+                <Input required name='cover' type='file' accept='image/*' />
               </FormGroup>
             </Col>
           </Row>
@@ -264,7 +306,7 @@ export default class AddOst extends React.Component {
             <Col md={12}>
               <FormGroup>
                 <Label for='related'>Related OSTs:</Label>
-                <Select isMulti name='related' options={this.state.osts.map(c => ({ value: c.id, label: c.title }))} styles={{ option: () => ({ color: 'black' }) }} />
+                <Select isMulti name='related' onInputChange={this.handleOstChange} isLoading={this.state.ostLoading} options={this.state.osts.map(c => ({ value: c.id, label: c.title }))} styles={{ option: () => ({ color: 'black' }) }} />
               </FormGroup>
             </Col>
           </Row>

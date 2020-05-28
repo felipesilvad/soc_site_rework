@@ -1,4 +1,6 @@
 const base64Img = require('base64-img')
+const { Op } = require('sequelize')
+
 module.exports = {
   Ost: {
     artists: (parent, args, context, info) => parent.getArtists(),
@@ -29,7 +31,7 @@ module.exports = {
   },
 
   Query: {
-    osts: async (parent, args, { db }, info) => db.ost.findAll(),
+    osts: (parent, args, { db }, info) => db.ost.findAll(),
     artists: (parent, args, { db }, info) => db.artist.findAll(),
     platforms: (parent, args, { db }, info) => db.platform.findAll(),
     publishers: (parent, args, { db }, info) => db.publisher.findAll(),
@@ -37,7 +39,18 @@ module.exports = {
     series: (parent, args, { db }, info) => db.series.findAll(),
     types: (parent, args, { db }, info) => db.type.findAll(),
     games: (parent, args, { db }, info) => db.game.findAll(),
-    ost: (parent, { id }, { db }, info) => db.ost.findByPk(id)
+    ost: (parent, { id, title }, { db }, info) => db.ost.findByPk(id),
+    searchOstByTitle: (parent, { title }, { db }) => db.ost.findAll({
+      where: {
+        title: {
+          [Op.like]: `%${title}%`
+        }
+      }
+    }),
+    recentOst: (parent, { limit }, { db }) => db.ost.findAll({
+      limit: limit,
+      order: [['createdAt', 'DESC']]
+    })
   },
 
   Mutation: {

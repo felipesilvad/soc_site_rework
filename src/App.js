@@ -1,6 +1,9 @@
 import React from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.min.css'
 import AddForms from './templates/AddForms'
+
 import ApolloClient from 'apollo-boost'
 const client = new ApolloClient({
   uri: '/api'
@@ -10,6 +13,17 @@ export default class App extends React.Component {
   render () {
     return (
       <>
+        <ToastContainer
+          position='top-right'
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
         <header className='header'>
           <p><a href='/'><img alt='soc_logo' src='/img/winterlogo.png' width='250px;' /></a></p>
           <nav className='navbar navbar-expand-lg navbar-dark bg-dark'>
@@ -34,7 +48,7 @@ export default class App extends React.Component {
             </form>
           </nav>
         </header>
-        <AddForms client={client} ost={{}} platform={{}} game={{}} />
+        <AddForms client={client} />
       </>
     )
   }

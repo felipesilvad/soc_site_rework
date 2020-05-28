@@ -95,7 +95,9 @@ module.exports = `
         osts: [Ost!]!
         types: [Type!]!
         classes: [Class!]!
-        ost(id: ID!): Ost 
+        ost(id: ID): Ost
+        searchOstByTitle(title: String): [Ost] 
+        recentOst(limit: Int!): [Ost]
         artists: [Artist!]!     
         platforms: [Platform!]!
         publishers: [Publisher!]!   
