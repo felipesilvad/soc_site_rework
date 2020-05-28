@@ -69,28 +69,33 @@ module.exports = {
       return game.dataValues
     },
     createOst: async (parent, data, { db }, info) => {
-      const artists = await Promise.all(
-        data.artists.map(a => db.artist.findOrCreate(
-          {
-            where: { name: a }
-          }
-        ))
-      )
-
       const ost = await db.ost.create(data)
-      await ost.setArtists(artists.map(a => a[0].dataValues.id))
-      await Promise.all(data.links.map(async category => {
-        const linkCategory = await ost.createLinkCategory(category)
-        await Promise.all(category.links.map(link => linkCategory.createLink(link)))
-      }))
-      await Promise.all(data.discs.map(d => ost.createDisc(d)))
-      await ost.setPlatforms(data.platforms)
-      await ost.setGames(data.games)
-      await ost.setTypes(data.types)
-      await ost.setClasses(data.classes)
-      console.log(data.related)
-      await ost.setRelated(data.related)
-      base64Img.imgSync(data.cover, '../public/img/ost', ost.dataValues.id)
+
+      await Promise.all([
+        new Promise((resolve, reject) => {
+          Promise.all(
+            data.artists.map(a => db.artist.findOrCreate(
+              {
+                where: { name: a }
+              }
+            ))
+          ).then(artists => {
+            return ost.setArtists(artists.map(a => a[0].dataValues.id))
+          }).then(resolve)
+            .catch(reject)
+        }),
+        Promise.all(data.links.map(async category => {
+          const linkCategory = await ost.createLinkCategory(category)
+          await Promise.all(category.links.map(link => linkCategory.createLink(link)))
+        })),
+        Promise.all(data.discs.map(d => ost.createDisc(d))),
+        ost.setPlatforms(data.platforms),
+        ost.setGames(data.games),
+        ost.setTypes(data.types),
+        ost.setClasses(data.classes),
+        ost.setRelated(data.related),
+        base64Img.imgSync(data.cover, '../public/img/ost', ost.dataValues.id)
+      ])
 
       return ost
     }
