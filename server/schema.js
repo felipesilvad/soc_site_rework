@@ -3,7 +3,6 @@ module.exports = `
         id: ID!
         title: String!
         subTitle: String
-        cover: String
         releaseDate: String
         label: String
         discs: [Disc]
@@ -13,17 +12,28 @@ module.exports = `
         types: [Type]
         platforms: [Platform]
         games: [Game]
+        related: [Ost]
     }
 
     type Disc {
         number: Int
-        tracks: [Track]
+        body: String
+        ost: Ost
     }
 
-    type Track {
-        length: String
+    input DiscInput {
         number: Int
-        name: String
+        body: String
+    }
+
+    input CategoryInput {
+        title: String
+        links: [LinkInput]
+    }
+
+    input LinkInput {
+        provider: String
+        url: String
     }
 
     type LinkCategory {
@@ -51,6 +61,7 @@ module.exports = `
     type Game {
         slug: String!
         name: String
+        releaseDate: String
         publishers: [Publisher]
         osts: [Ost]
         series: [Series]
@@ -92,39 +103,26 @@ module.exports = `
         games: [Game!]!
     }
 
-    input SeriesInput {
-        slug: String
-    }
-
-    input PublisherInput {
-        id: ID
-    }
-
-    input GameInput {
-        slug:String
-        name:String
-        publishers:[PublisherInput]
-        series:[SeriesInput]
-    }
-
     type Mutation {
         createArtist(name: String): Artist!
         createPlatform(name: String): Platform!
         createPublisher(name: String): Publisher!
-        createSeries(slug: String, name:String): Series!
-        createGame(slug:String, name:String, publishers:[ID], series:[String]): Game!
+        createSeries(slug: String, name:String, cover:String): Series!
+        createGame(releaseDate:String, slug:String, name:String, publishers:[ID], series:[String], cover:String): Game!
         createOst(
             title: String, 
             subTitle: String, 
             cover: String,
             releaseDate: String,
             label: String,
-            links: [ID],
-            artists: [ID],
+            links: [CategoryInput],
+            artists: [String],
             classes: [ID],
             types: [ID],
             platforms: [ID],
-            games: [ID]
+            games: [ID],
+            discs: [DiscInput],
+            related: [ID]
         ): Ost!
     }
 `

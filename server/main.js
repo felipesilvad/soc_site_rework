@@ -12,7 +12,13 @@ const server = new ApolloServer({
 })
 
 const app = express()
-server.applyMiddleware({ app, path: '/api' })
+server.applyMiddleware({
+  app,
+  path: '/api',
+  bodyParserConfig: {
+    limit: '100mb'
+  }
+})
 
 app.use(express.static('app/public'))
 

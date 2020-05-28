@@ -1,14 +1,20 @@
 import React from 'react'
 import gql from 'graphql-tag'
 import { Button, Col, Row, Form, FormGroup, Label, Input } from 'reactstrap'
+import serialize from 'form-serialize'
+import getBase64 from './getBase64'
 
 export default class AddOst extends React.Component {
-  handleSubmitForm = (e) => {
+  handleSubmitForm = async (e) => {
+    e.preventDefault()
+    e.persist()
+
     const query = gql`
-    mutation CreateSeries($slug:String!, $name:String!){
+    mutation CreateSeries($slug:String!, $name:String!, $cover: String!){
       createSeries(
         name: $name
         slug: $slug
+        cover: $cover
       ) {
         slug
         name
@@ -16,11 +22,12 @@ export default class AddOst extends React.Component {
     }
     
 `
-    this.props.client.mutate({ mutation: query, variables: { slug: e.target.elements.slug.value, name: e.target.elements.name.value } }).then(results => {
+
+    const data = serialize(e.target, { hash: true })
+    data.cover = await getBase64(e.target.elements.cover.files[0])
+    this.props.client.mutate({ mutation: query, variables: data }).then(results => {
       console.log(results)
     }).catch(console.log)
-    e.preventDefault()
-    e.persist()
   }
 
   render () {
@@ -41,6 +48,14 @@ export default class AddOst extends React.Component {
                 <Input type='text' name='name' />
               </FormGroup>
             </Col>
+            <Col md={4}>
+              <FormGroup>
+                <Label for='cover'>Cover:</Label>
+                <Input name='cover' type='file' accept='image/*' />
+              </FormGroup>
+            </Col>
+          </Row>
+          <Row>
             <Col className='m-auto'>
               <Button type='submit' color='primary'>Add Series</Button>
             </Col>

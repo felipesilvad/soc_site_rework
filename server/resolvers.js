@@ -1,3 +1,4 @@
+const base64Img = require('base64-img')
 module.exports = {
   Ost: {
     artists: (parent, args, context, info) => parent.getArtists(),
@@ -5,8 +6,9 @@ module.exports = {
     types: (parent, args, context, info) => parent.getTypes(),
     platforms: (parent, args, context, info) => parent.getPlatforms(),
     games: (parent, args, context, info) => parent.getGames(),
-    links: (parent, args, context, info) => parent.getLinks(),
-    discs: (parent, args, context, info) => parent.getDiscs()
+    links: (parent, args, context, info) => parent.getLinkCategories(),
+    discs: (parent, args, context, info) => parent.getDiscs(),
+    related: (parent, args, context, info) => parent.getRelated()
   },
 
   Game: {
@@ -22,8 +24,12 @@ module.exports = {
     games: (parent, args, context, info) => parent.getGames()
   },
 
+  Disc: {
+    ost: (parent) => parent.getOst()
+  },
+
   Query: {
-    osts: (parent, args, { db }, info) => db.ost.findAll(),
+    osts: async (parent, args, { db }, info) => db.ost.findAll(),
     artists: (parent, args, { db }, info) => db.artist.findAll(),
     platforms: (parent, args, { db }, info) => db.platform.findAll(),
     publishers: (parent, args, { db }, info) => db.publisher.findAll(),
@@ -49,6 +55,7 @@ module.exports = {
     },
     createSeries: async (parent, data, { db }, info) => {
       const result = await db.series.create(data)
+      base64Img.imgSync(data.cover, '../public/img/series', result.dataValues.slug)
       return result.dataValues
     },
     createGame: async (parent, data, { db }, info) => {
@@ -57,11 +64,35 @@ module.exports = {
 
       await game.setSeries(data.series)
       await game.setPublishers(data.publishers)
+      base64Img.imgSync(data.cover, '../public/img/game', game.dataValues.slug)
 
       return game.dataValues
     },
-    createOst: (parent, data, { db }, info) => {
-      console.log(data)
+    createOst: async (parent, data, { db }, info) => {
+      const artists = await Promise.all(
+        data.artists.map(a => db.artist.findOrCreate(
+          {
+            where: { name: a }
+          }
+        ))
+      )
+
+      const ost = await db.ost.create(data)
+      await ost.setArtists(artists.map(a => a[0].dataValues.id))
+      await Promise.all(data.links.map(async category => {
+        const linkCategory = await ost.createLinkCategory(category)
+        await Promise.all(category.links.map(link => linkCategory.createLink(link)))
+      }))
+      await Promise.all(data.discs.map(d => ost.createDisc(d)))
+      await ost.setPlatforms(data.platforms)
+      await ost.setGames(data.games)
+      await ost.setTypes(data.types)
+      await ost.setClasses(data.classes)
+      console.log(data.related)
+      await ost.setRelated(data.related)
+      base64Img.imgSync(data.cover, '../public/img/ost', ost.dataValues.id)
+
+      return ost
     }
   }
 }

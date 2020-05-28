@@ -16,6 +16,7 @@
     "cra-template": "1.0.3",
     "customize-cra": "^0.9.1",
     "dotenv": "^8.2.0",
+    "form-serialize": "^0.7.2",
     "graphql": "^15.0.0",
     "graphql-tag": "^2.10.3",
     "http-proxy-middleware": "^0.20.0",

@@ -27,22 +27,10 @@ export default class AddSimple extends React.Component {
   render () {
     return (
       <div className='mt-3'>
-        <div className='mb-2'>Add Artist/Publisher/Platform</div>
+        <div className='mb-2'>Add Publisher/Platform</div>
         <div className='site-form blackblock'>
           <Row>
-            <Col md={4}>
-              <Form onSubmit={e => this.handleSubmitForm(e, 'Artist')}>
-                <Row form>
-                  <Col md={8}>
-                    <Input type='text' name='name' />
-                  </Col>
-                  <Col md={4}>
-                    <Button color='primary' className='mb-2'>Add Artist</Button>
-                  </Col>
-                </Row>
-              </Form>
-            </Col>
-            <Col md={4}>
+            <Col md={6}>
               <Form onSubmit={e => this.handleSubmitForm(e, 'Publisher')}>
                 <Row form>
                   <Col md={8}>
@@ -54,7 +42,7 @@ export default class AddSimple extends React.Component {
                 </Row>
               </Form>
             </Col>
-            <Col md={4}>
+            <Col md={6}>
               <Form onSubmit={e => this.handleSubmitForm(e, 'Platform')}>
                 <Row form>
                   <Col md={8}>

@@ -1,53 +1,77 @@
 import React from 'react'
 import gql from 'graphql-tag'
 import Select from 'react-select'
+import serialize from 'form-serialize'
 import { Button, Col, Row, Form, FormGroup, Label, Input } from 'reactstrap'
-const options = [
-  { value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' },
-  { value: 'vanilla', label: 'Vanilla' }
-]
+import getBase64 from './getBase64'
 
-class Disc extends React.Component {
-  state={ tracks: 0 }
+export class Links extends React.Component {
+  state={ links: [[[]]] }
   render () {
-    const tracks = []
-    for (let i = 0; i <= this.state.tracks; i++) {
-      tracks.push(
-        <Row key={i}>
-          <Col md={6}>
-            <FormGroup>
-              <Label>Name:</Label>
-              <Input name={`disc[${this.props.id}][${i}][name]`} type='text' />
-            </FormGroup>
-          </Col>
-          <Col md={6}>
-            <FormGroup>
-              <Label>Length:</Label>
-              <Input name={`disc[${this.props.id}][${i}][length]`} type='text' />
-            </FormGroup>
-          </Col>
-        </Row>
-      )
-    }
     return (
-      <Col md={6}>
+      <>
         <Row>
           <Col>
-            <FormGroup inline>
-              <Label>Disc {this.props.id + 1}</Label>
-              <Button className='ml-1' color='primary' onClick={() => this.setState({ tracks: this.state.tracks + 1 })}>Add Track</Button>
-            </FormGroup>
+            <Button
+              color='primary' onClick={() => {
+                const links = this.state.links
+                links.push([[]])
+                this.setState({ links: links })
+              }}
+            >Add Link Section
+            </Button>
           </Col>
         </Row>
-        {tracks}
-      </Col>
+        <Row>
+          {this.state.links.map((a, category) =>
+            <Col md={6} key={category}>
+              <Row>
+                <Col md={6}>
+                  <FormGroup className='mt-3'>
+                    <Label>Category {category + 1} title:</Label>
+                    <Input name='links[][title]' type='text' />
+                  </FormGroup>
+                </Col>
+                <Col md={6} className='mt-auto'>
+                  <FormGroup>
+                    <Button
+                      color='primary'
+                      onClick={() => {
+                        const links = this.state.links
+                        links[category].push([])
+                        this.setState({ links: links })
+                      }}
+                    >Add Link
+                    </Button>
+                  </FormGroup>
+                </Col>
+              </Row>
+              {this.state.links[category].map((l, link) =>
+                <Row key={link}>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label>Provider:</Label>
+                      <Input name={`links[${category}][links][${link}][provider]`} type='text' />
+                    </FormGroup>
+                  </Col>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label>Url:</Label>
+                      <Input name={`links[${category}][links][${link}][url]`} type='text' />
+                    </FormGroup>
+                  </Col>
+                </Row>
+              )}
+            </Col>
+          )}
+        </Row>
+      </>
     )
   }
 }
 
 export default class AddOst extends React.Component {
-  state = { platforms: [], classes: [], types: [], artists: [], discs: 0 }
+  state = { osts: [], games: [], platforms: [], classes: [], types: [], discs: 0 }
 
   componentDidMount () {
     const query = gql`
@@ -60,14 +84,18 @@ export default class AddOst extends React.Component {
           id
           name
         }
-        artists{
-          id
-          name
-        }
         platforms{
           id
           name
         }
+        games {
+          slug
+          name
+        }    
+        osts {
+          id
+          title
+        }    
       }
     `
     this.props.client.query({ query }).then(results => {
@@ -75,18 +103,86 @@ export default class AddOst extends React.Component {
     })
   }
 
+  handleSubmitForm = async (e) => {
+    e.preventDefault()
+    e.persist()
+
+    const data = serialize(e.target, { hash: true })
+
+    data.artists = data.artists.split(',')
+    data.discs = data.discs.map((d, i) => {
+      const payload = d
+      payload.number = i
+      return payload
+    })
+    data.cover = await getBase64(e.target.elements.cover.files[0])
+    console.log(data)
+
+    const query = gql`
+      mutation CreateOst(
+        $title: String, 
+        $subTitle: String, 
+        $cover: String,
+        $releaseDate: String,
+        $label: String,
+        $links: [CategoryInput],
+        $artists: [String],
+        $classes: [ID],
+        $types: [ID],
+        $platforms: [ID],
+        $games: [ID],
+        $discs: [DiscInput],
+        $related: [ID]
+      ){
+        createOst(
+          title: $title, 
+          subTitle: $subTitle, 
+          cover: $cover,
+          releaseDate: $releaseDate,
+          label: $label,
+          links: $links,
+          artists: $artists,
+          classes: $classes,
+          types: $types,
+          platforms: $platforms,
+          games: $games,
+          discs: $discs,
+          related: $related
+        )
+        {
+          id
+        }
+      }
+    `
+    this.props.client.mutate({
+      mutation: query,
+      variables: data
+    }).then(results => {
+      console.log(results)
+    }).catch(console.log)
+  }
+
   render () {
     const discs = []
     for (let i = 0; i <= this.state.discs; i++) {
       discs.push(
-        <Disc key={i} id={i} />
+        <Col md={6} key={i}>
+          <Row>
+            <Col md={12}>
+              <FormGroup>
+                <Label>Disc {i + 1}:</Label>
+                <Input name='discs[][body]' type='textarea' />
+              </FormGroup>
+            </Col>
+          </Row>
+        </Col>
       )
     }
 
     return (
       <>
         <div className='mb-2 mt-3'>Add OST</div>
-        <Form className='site-form blackblock'>
+        <Form className='site-form blackblock' onSubmit={this.handleSubmitForm}>
           <Row form>
             <Col md={3}>
               <FormGroup>
@@ -118,7 +214,7 @@ export default class AddOst extends React.Component {
             <Col md={4}>
               <FormGroup>
                 <Label for='artists'>Artists:</Label>
-                <Select isMulti name='artists' options={this.state.artists.map(c => ({ value: c.id, label: c.name }))} styles={{ option: () => ({ color: 'black' }) }} />
+                <Input name='artists' type='textarea' />
               </FormGroup>
             </Col>
 
@@ -132,26 +228,42 @@ export default class AddOst extends React.Component {
             <Col md={4}>
               <FormGroup>
                 <Label for='games'>Games:</Label>
-                <Select isMulti name='games' options={options} styles={{ option: () => ({ color: 'black' }) }} />
+                <Select isMulti name='games' options={this.state.games.map(c => ({ value: c.slug, label: c.name }))} styles={{ option: () => ({ color: 'black' }) }} />
               </FormGroup>
             </Col>
           </Row>
 
           <Row form>
-            <Col md={6}>
+            <Col md={4}>
               <FormGroup>
                 <Label for='classes'>Classification:</Label>
                 <Select isMulti name='classes' options={this.state.classes.map(c => ({ value: c.id, label: c.name }))} styles={{ option: () => ({ color: 'black' }) }} />
               </FormGroup>
             </Col>
-            <Col md={6}>
+            <Col md={4}>
               <FormGroup>
                 <Label for='types'>Types:</Label>
                 <Select isMulti name='types' options={this.state.types.map(c => ({ value: c.id, label: c.name }))} styles={{ option: () => ({ color: 'black' }) }} />
               </FormGroup>
             </Col>
+            <Col md={4}>
+              <FormGroup>
+                <Label for='cover'>Cover:</Label>
+                <Input name='cover' type='file' accept='image/*' />
+              </FormGroup>
+            </Col>
           </Row>
 
+          <hr className='style2 style-white' />
+
+          <Row>
+            <Col md={12}>
+              <FormGroup>
+                <Label for='related'>Related OSTs:</Label>
+                <Select isMulti name='related' options={this.state.osts.map(c => ({ value: c.id, label: c.title }))} styles={{ option: () => ({ color: 'black' }) }} />
+              </FormGroup>
+            </Col>
+          </Row>
           <hr className='style2 style-white' />
           <Row>
             <Col>
@@ -161,6 +273,16 @@ export default class AddOst extends React.Component {
 
           <Row form className='mt-3'>
             {discs}
+          </Row>
+
+          <hr className='style2 style-white' />
+
+          <Links />
+
+          <Row form>
+            <Col className='m-auto'>
+              <Button type='submit' color='primary'>Add OST</Button>
+            </Col>
           </Row>
         </Form>
       </>

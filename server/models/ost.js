@@ -7,7 +7,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     title: DataTypes.STRING,
     subTitle: DataTypes.STRING,
-    cover: DataTypes.BLOB('long'),
     releaseDate: DataTypes.DATEONLY,
     label: DataTypes.STRING
   },
@@ -16,37 +15,15 @@ module.exports = (sequelize, DataTypes) => {
   }
   )
 
-  const Link = sequelize.define('link', {
-    url: DataTypes.STRING,
-    provider: DataTypes.STRING
-  })
-
-  const LinkCategory = sequelize.define('linkCategory', {
-    title: DataTypes.STRING
-  })
-
-  const Disc = sequelize.define('disc', {
-    number: DataTypes.INTEGER
-  })
-
-  const Track = sequelize.define('track', {
-    number: DataTypes.INTEGER,
-    length: DataTypes.STRING,
-    name: DataTypes.STRING
-  })
-
-  Disc.hasMany(Track)
-
-  LinkCategory.hasMany(Link)
-  Ost.hasMany(LinkCategory)
-  Ost.hasMany(Disc)
-
   Ost.associate = models => {
     Ost.belongsToMany(models.artist, { through: 'Ost_Artist' })
     Ost.belongsToMany(models.class, { through: 'Ost_Class' })
     Ost.belongsToMany(models.type, { through: 'Ost_Type' })
     Ost.belongsToMany(models.platform, { through: 'Ost_Platform' })
     Ost.belongsToMany(models.game, { through: 'Ost_Game' })
+    Ost.hasMany(models.disc)
+    Ost.hasMany(models.linkCategory)
+    Ost.belongsToMany(Ost, { through: 'related_ost', as: 'related' })
   }
   return Ost
 }
