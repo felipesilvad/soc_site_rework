@@ -71,7 +71,7 @@ export class Links extends React.Component {
 }
 
 export default class AddOst extends React.Component {
-  state = { osts: [], games: [], platforms: [], classes: [], types: [], discs: 0 }
+  state = { osts: [], games: [], platforms: [], classes: [], types: [], discs: 0, loading: false }
 
   componentDidMount () {
     const query = gql`
@@ -154,12 +154,16 @@ export default class AddOst extends React.Component {
         }
       }
     `
+
     this.props.client.mutate({
       mutation: query,
       variables: data
     }).then(results => {
       console.log(results)
-    }).catch(console.log)
+    }).catch(err => {
+      console.log(err)
+    }).finally(() => this.setState({ loading: false }))
+    this.setState({ loading: true })
   }
 
   render () {
@@ -281,7 +285,9 @@ export default class AddOst extends React.Component {
 
           <Row form>
             <Col className='m-auto'>
-              <Button type='submit' color='primary'>Add OST</Button>
+              {this.state.loading
+                ? <Button type='submit' color='primary' className='py-0' disabled><img alt='' src='/img/assets/spinner_white.svg' style={{ height: '35px' }} /></Button>
+                : <Button type='submit' color='primary'>Add OST</Button>}
             </Col>
           </Row>
         </Form>
