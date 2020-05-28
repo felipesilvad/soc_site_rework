@@ -93,9 +93,10 @@ module.exports = {
         ost.setGames(data.games),
         ost.setTypes(data.types),
         ost.setClasses(data.classes),
-        ost.setRelated(data.related),
-        base64Img.imgSync(data.cover, '../public/img/ost', ost.dataValues.id)
+        ost.setRelated(data.related)
       ])
+
+      base64Img.imgSync(data.cover, '../public/img/ost', ost.dataValues.id)
 
       return ost
     }
