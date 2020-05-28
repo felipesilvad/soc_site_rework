@@ -59,11 +59,11 @@ module.exports = {
       return result.dataValues
     },
     createGame: async (parent, data, { db }, info) => {
-      console.log(data)
       const game = await db.game.create(data)
-
-      await game.setSeries(data.series)
-      await game.setPublishers(data.publishers)
+      await Promise.all([
+        game.setSeries(data.series),
+        game.setPublishers(data.publishers)
+      ])
       base64Img.imgSync(data.cover, '../public/img/game', game.dataValues.slug)
 
       return game.dataValues
