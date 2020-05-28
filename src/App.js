@@ -11,7 +11,7 @@ export default class App extends React.Component {
     return (
       <>
         <header className='header'>
-          <p><a href="{% url 'ost:list' %}"><img src='/img/winterlogo.png' width='250px;' /></a></p>
+          <p><a href='/'><img alt='soc_logo' src='/img/winterlogo.png' width='250px;' /></a></p>
           <nav className='navbar navbar-expand-lg navbar-dark bg-dark'>
             <ul className='navbar-nav mr-auto'>
               {/* % if user.is_authenticated % */}
@@ -21,7 +21,7 @@ export default class App extends React.Component {
                                   <button type="submit">Logout</button>
   </form> --> */}
               </li>
-              <li className='nav-item'><a href='' className='nav-link'>Home</a></li>
+              <li className='nav-item'><a href='/' className='nav-link'>Home</a></li>
               <li className='nav-item'><a href="{% url 'ost:add' %}" className='nav-link'>Add OST</a></li>
               {/* % else % */}
               <li className='nav-item'><a href="{% url 'accounts:login' %}">Login</a></li>
