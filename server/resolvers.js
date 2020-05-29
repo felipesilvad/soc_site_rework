@@ -13,6 +13,10 @@ module.exports = {
     related: (parent, args, context, info) => parent.getRelated()
   },
 
+  LinkCategory: {
+    links: (parent, args, context, info) => parent.getLinks()
+  },
+
   Game: {
     series: (parent, args, context, info) => parent.getSeries(),
     publishers: (parent, args, context, info) => parent.getPublishers()
@@ -81,37 +85,36 @@ module.exports = {
 
       return game.dataValues
     },
-    createOst: async (parent, data, { db }, info) => {
-      const ost = await db.ost.create(data)
-
-      await Promise.all([
-        new Promise((resolve, reject) => {
-          Promise.all(
-            data.artists.map(a => db.artist.findOrCreate(
-              {
-                where: { name: a }
-              }
-            ))
-          ).then(artists => {
-            return ost.setArtists(artists.map(a => a[0].dataValues.id))
-          }).then(resolve)
-            .catch(reject)
-        }),
-        Promise.all(data.links.map(async category => {
-          const linkCategory = await ost.createLinkCategory(category)
-          await Promise.all(category.links.map(link => linkCategory.createLink(link)))
-        })),
-        Promise.all(data.discs.map(d => ost.createDisc(d))),
-        ost.setPlatforms(data.platforms),
-        ost.setGames(data.games),
-        ost.setTypes(data.types),
-        ost.setClasses(data.classes),
-        ost.setRelated(data.related)
-      ])
-
-      base64Img.imgSync(data.cover, '../public/img/ost', ost.dataValues.id)
-
-      return ost
+    createOst: (parent, data, { db }, info) => {
+      db.sequelize.transaction(t1 => {
+        return db.ost.create(data).then(ost => {
+          return Promise.all([
+            Promise.all(
+              (data.artists || []).map(a => db.artist.findOrCreate(
+                {
+                  where: { name: a }
+                }
+              ))
+            ).then(artists => {
+              return ost.setArtists(artists.map(a => a[0].dataValues.id))
+            }),
+            Promise.all(data.links.map(category => {
+              return ost.createLinkCategory(category).then(linkCategory => {
+                return Promise.all(category.links.map(link => linkCategory.createLink(link)))
+              })
+            })),
+            Promise.all(data.discs.map(d => ost.createDisc(d))),
+            ost.setPlatforms(data.platforms || []),
+            ost.setGames(data.games || []),
+            ost.setTypes(data.types),
+            ost.setClasses(data.classes),
+            ost.setRelated(data.related || []),
+            base64Img.imgSync(data.cover, '../public/img/ost', ost.dataValues.id)
+          ])
+        })
+      }).then(result => {
+        return result
+      })
     }
   }
 }

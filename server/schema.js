@@ -2,17 +2,17 @@ module.exports = `
     type Ost {
         id: ID!
         title: String!
-        subTitle: String
-        releaseDate: String
-        label: String
-        discs: [Disc]
-        links: [LinkCategory]
-        artists: [Artist]
-        classes: [Class]
-        types: [Type]
-        platforms: [Platform]
-        games: [Game]
-        related: [Ost]
+        subTitle: String!
+        releaseDate: String!
+        label: String!
+        discs: [Disc!]!
+        links: [LinkCategory!]!
+        artists: [Artist]!
+        classes: [Class!]!
+        types: [Type!]!
+        platforms: [Platform]!
+        games: [Game]!
+        related: [Ost]!
     }
 
     type Disc {
@@ -28,21 +28,25 @@ module.exports = `
 
     input CategoryInput {
         title: String
+        small: Boolean
         links: [LinkInput]
     }
 
     input LinkInput {
         provider: String
+        custom: Boolean
         url: String
     }
 
     type LinkCategory {
         title: String
+        small: Boolean
         links: [Link]
     }
 
     type Link {
         provider: String
+        custom: Boolean
         url: String
     }
 

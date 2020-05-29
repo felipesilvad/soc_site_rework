@@ -2,7 +2,11 @@
 
 const fs = require('fs')
 const path = require('path')
+const cls = require('continuation-local-storage')
+const namespace = cls.createNamespace('sequelize-transaction')
+
 const Sequelize = require('sequelize')
+Sequelize.useCLS(namespace)
 const basename = path.basename(__filename)
 const env = process.env.NODE_ENV || 'development'
 const config = require(path.join(__dirname, '/../config/config.json'))[env]

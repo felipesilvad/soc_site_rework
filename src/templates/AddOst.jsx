@@ -33,7 +33,7 @@ export class Links extends React.Component {
                     <Input required name='links[][title]' type='text' />
                   </FormGroup>
                 </Col>
-                <Col md={6} className='mt-auto'>
+                <Col md={3} className='mt-auto'>
                   <FormGroup>
                     <Button
                       color='primary'
@@ -46,20 +46,32 @@ export class Links extends React.Component {
                     </Button>
                   </FormGroup>
                 </Col>
+                <Col md={3} className='mt-auto mb-3'>
+                  <div class='form-check'>
+                    <Input type='checkbox' name={`links[${category}][small]`} className='form-check-input' />
+                    <Label className='form-check-label' for={`links[${category}][small]`}>Small Title</Label>
+                  </div>
+                </Col>
               </Row>
               {this.state.links[category].map((l, link) =>
                 <Row key={link}>
-                  <Col md={6}>
+                  <Col md={4}>
                     <FormGroup>
                       <Label>Provider:</Label>
                       <Input required name={`links[${category}][links][${link}][provider]`} type='text' />
                     </FormGroup>
                   </Col>
-                  <Col md={6}>
+                  <Col md={4}>
                     <FormGroup>
                       <Label>Url:</Label>
                       <Input required name={`links[${category}][links][${link}][url]`} type='text' />
                     </FormGroup>
+                  </Col>
+                  <Col md={4} className='mt-auto mb-3'>
+                    <div class='form-check'>
+                      <Input type='checkbox' name={`links[${category}][links][${link}][custom]`} className='form-check-input' />
+                      <Label className='form-check-label' for={`links[${category}][links][${link}][custom]`}>Custom</Label>
+                    </div>
                   </Col>
                 </Row>
               )}
@@ -119,13 +131,19 @@ export default class AddOst extends React.Component {
     e.preventDefault()
     const data = serialize(e.target, { hash: true })
 
-    data.artists = data.artists.split(',')
+    if (data.artists) data.artists = data.artists.split(',')
     data.discs = data.discs.map((d, i) => {
       const payload = d
       payload.number = i
       return payload
     })
     data.cover = await getBase64(e.target.elements.cover.files[0])
+    data.links.forEach(link => {
+      link.small = link.small === 'on'
+      link.links.forEach(linkItem => {
+        linkItem.custom = linkItem.custom === 'on'
+      })
+    })
     console.log(data)
 
     const query = gql`
@@ -260,7 +278,7 @@ export default class AddOst extends React.Component {
             <Col md={4}>
               <FormGroup>
                 <Label for='artists'>Artists:</Label>
-                <Input required name='artists' type='textarea' />
+                <Input name='artists' type='textarea' />
               </FormGroup>
             </Col>
 
@@ -283,13 +301,13 @@ export default class AddOst extends React.Component {
             <Col md={4}>
               <FormGroup>
                 <Label for='classes'>Classification:</Label>
-                <Select isMulti name='classes' options={this.state.classes.map(c => ({ value: c.id, label: c.name }))} styles={{ option: () => ({ color: 'black' }) }} />
+                <Select required isMulti name='classes' options={this.state.classes.map(c => ({ value: c.id, label: c.name }))} styles={{ option: () => ({ color: 'black' }) }} />
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
                 <Label for='types'>Types:</Label>
-                <Select isMulti name='types' options={this.state.types.map(c => ({ value: c.id, label: c.name }))} styles={{ option: () => ({ color: 'black' }) }} />
+                <Select required isMulti name='types' options={this.state.types.map(c => ({ value: c.id, label: c.name }))} styles={{ option: () => ({ color: 'black' }) }} />
               </FormGroup>
             </Col>
             <Col md={4}>
