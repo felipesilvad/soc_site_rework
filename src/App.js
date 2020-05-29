@@ -2,14 +2,28 @@ import React from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.min.css'
+
 import AddForms from './templates/AddForms'
 
 import ApolloClient from 'apollo-boost'
+
+import { useRoutes } from 'hookrouter'
+
+const routes = {
+  '/': () => <AddForms client={client} />,
+  '/admin/ost': () => <AddForms client={client} />
+}
+
 const client = new ApolloClient({
   uri: '/api'
 })
 
-export default class App extends React.Component {
+export default function App () {
+  const routeResult = useRoutes(routes)
+  return <AppContent route={routeResult} />
+}
+
+class AppContent extends React.Component {
   render () {
     return (
       <>
@@ -48,7 +62,7 @@ export default class App extends React.Component {
             </form>
           </nav>
         </header>
-        <AddForms client={client} />
+        {this.props.route}
       </>
     )
   }
