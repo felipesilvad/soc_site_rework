@@ -21,6 +21,7 @@ export default class OstDetail extends React.Component {
           title
           subTitle
           releaseDate
+          vgmdb
           platforms {
             id
             name
@@ -52,12 +53,12 @@ export default class OstDetail extends React.Component {
 
   render () {
     return (
-      <div className='ost-container' style={{ backgroundImage: 'url({{this.state.ost.cover.url})' }}>
+      <div className='ost-container' style={{ backgroundImage: `/img/ost/${this.props.ost}.png` }}>
         <div className='background-overlay'>
           <Container>
             <div className='ost-detail'>
               <Row>
-                <Col lg={5}><img className='img-fluid' src='{this.state.ost.cover.url }' /></Col>
+                <Col lg={5}><img className='img-fluid' src={`/img/ost/${this.props.ost}.png`} /></Col>
                 <Col lg={7} className='blackblock'>
                   <Row><Col><h1 className='text-center ost-title'>{this.state.ost.title}</h1></Col></Row>
                   <Row><Col><h6 className='text-center tracklist'>{this.state.ost.subTitle}</h6></Col></Row>
@@ -124,10 +125,12 @@ export default class OstDetail extends React.Component {
               </div>
               <div className='col-lg-6'>
                 <div className='blackblock'>
-                  <p className='pl-2'>Check album at:</p>
-                  {/* % if this.state.ost.vgmdb_link % */}
-                  <a target='_blank' href='{this.state.ost.vgmdb_link }'><img width='100px' src='https://vgmdb.net/db/img/vgmdblogo.png' /></a>
-                  {/* % endif % */}
+                  {this.state.ost.vgmdb ? (
+                    <>
+                      <p className='pl-2'>Check album at:</p>
+                      <a target='_blank' rel='noopener noreferrer' href={this.state.ost.vgmdb}><img width='100px' src='https://vgmdb.net/db/img/vgmdblogo.png' /></a>
+                    </>) : null}
+
                   <div className='red-block mt-2'>
                     <h1 className='text-center ost-title'>Buy The Original Soundtrack to support the artists</h1>
 
