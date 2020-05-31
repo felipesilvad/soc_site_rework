@@ -78,7 +78,7 @@ export default class OstDetail extends React.Component {
           <Container>
             <div className='ost-detail'>
               <Row>
-                <Col lg={5}><img className='img-fluid w-100 my-auto' src={`/img/ost/${this.props.ost}.png`} /></Col>
+                <Col lg={5}><img alt='' className='img-fluid w-100 my-auto' src={`/img/ost/${this.props.ost}.png`} /></Col>
                 <Col lg={7} className='blackblock'>
                   <Row><Col><h1 className='text-center ost-title'>{this.state.ost.title}</h1></Col></Row>
                   <Row><Col><h6 className='text-center tracklist'>{this.state.ost.subTitle}</h6></Col></Row>
@@ -144,7 +144,7 @@ export default class OstDetail extends React.Component {
                   <Row>
                     <Col className='mx-auto mb-2'>
                       Check album at:
-                      <a target='_blank' rel='noopener noreferrer' href={this.state.ost.vgmdb}><img width='100px' src='https://vgmdb.net/db/img/vgmdblogo.png' /></a>
+                      <a target='_blank' rel='noopener noreferrer' href={this.state.ost.vgmdb}><img alt='' width='100px' src='https://vgmdb.net/db/img/vgmdblogo.png' /></a>
                     </Col>
                   </Row>) : null}
 
@@ -156,7 +156,7 @@ export default class OstDetail extends React.Component {
                         <hr className='style-white w-100 mt-0' />
                         {this.state.ost.available.map(({ url, provider }) => (
                           <div className='links-list-items' key={provider}>
-                            <a target='_blank' rel='noopener noreferrer' href={url}><img className='link-img' src={`/img/provider/${provider}.jpg`} /></a>
+                            <a target='_blank' rel='noopener noreferrer' href={url}><img alt='' className='link-img' src={`/img/provider/${provider}.jpg`} /></a>
                           </div>
                         ))}
                       </div>
@@ -198,7 +198,7 @@ export default class OstDetail extends React.Component {
                 <div className='ost-list-items'>
                   <a href='/ost/{{this.state.ost.slug}'>
                     <div className='.ost-list-items-bg'>
-                      <p><img className='ost-list-img' src={`/img/ost/${this.props.ost}.png`} /></p>
+                      <p><img alt='' className='ost-list-img' src={`/img/ost/${this.props.ost}.png`} /></p>
                       <div className='ost-list-text text-wrap'>
                         {this.state.ost.title}
                       </div>
