@@ -21,7 +21,7 @@ module.exports = {
     platforms: (parent, args, context, info) => parent.getPlatforms(),
     games: (parent, args, context, info) => parent.getGames(),
     links: (parent, args, context, info) => parent.getLinkCategories(),
-    discs: (parent, args, context, info) => parent.getDiscs(),
+    discs: (parent, args, context, info) => parent.getDiscs({ order: [['number', 'ASC']] }),
     related: (parent, args, context, info) => parent.getRelated(),
     available: (parent) => parent.getAvailables()
   },

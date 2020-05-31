@@ -1,7 +1,7 @@
 import React from 'react'
 import gql from 'graphql-tag'
 import { toast } from 'react-toastify'
-import { Container, Button, Col, Row, Form, FormGroup, Label, Input } from 'reactstrap'
+import { Container, Button, Col, Row } from 'reactstrap'
 
 export default class OstDetail extends React.Component {
   state = {
@@ -12,7 +12,8 @@ export default class OstDetail extends React.Component {
       classes: [],
       types: [],
       available: [],
-      links: []
+      links: [],
+      discs: [{ body: '' }]
     }
   }
 
@@ -48,11 +49,16 @@ export default class OstDetail extends React.Component {
           }
           links{
             title
+            small
             links{
               url
               provider
               custom
             }
+          }
+          discs {
+            number
+            body
           }
         }
       }
@@ -72,7 +78,7 @@ export default class OstDetail extends React.Component {
           <Container>
             <div className='ost-detail'>
               <Row>
-                <Col lg={5}><img className='img-fluid' src={`/img/ost/${this.props.ost}.png`} /></Col>
+                <Col lg={5}><img className='img-fluid w-100 my-auto' src={`/img/ost/${this.props.ost}.png`} /></Col>
                 <Col lg={7} className='blackblock'>
                   <Row><Col><h1 className='text-center ost-title'>{this.state.ost.title}</h1></Col></Row>
                   <Row><Col><h6 className='text-center tracklist'>{this.state.ost.subTitle}</h6></Col></Row>
@@ -131,17 +137,15 @@ export default class OstDetail extends React.Component {
             <hr className='style2 style-white' />
 
             <Row className='row'>
-              <div className='col-lg-6'>
-                <div className='blackblock h-100 d-inline-block'>
-                  <h1 className='text-center ost-title'>TRACKLIST</h1>
-                  <h6 className='tracklist'>{this.state.ost.tracklist}</h6>
-                </div>
-              </div>
-              <Col lg={6} className='blackblock px-10px pt-0'>
+              <TrackList discs={this.state.ost.discs} />
+
+              <Col lg={6} className='blackblock px-10px'>
                 {this.state.ost.vgmdb ? (
                   <Row>
-                    <p className='pl-2'>Check album at:</p>
-                    <a target='_blank' rel='noopener noreferrer' href={this.state.ost.vgmdb}><img width='100px' src='https://vgmdb.net/db/img/vgmdblogo.png' /></a>
+                    <Col className='mx-auto mb-2'>
+                      Check album at:
+                      <a target='_blank' rel='noopener noreferrer' href={this.state.ost.vgmdb}><img width='100px' src='https://vgmdb.net/db/img/vgmdblogo.png' /></a>
+                    </Col>
                   </Row>) : null}
 
                 {this.state.ost.available.length > 0 ? (
@@ -194,7 +198,7 @@ export default class OstDetail extends React.Component {
                 <div className='ost-list-items'>
                   <a href='/ost/{{this.state.ost.slug}'>
                     <div className='.ost-list-items-bg'>
-                      <p><img className='ost-list-img' src='{{this.state.ost.cover.url}' /></p>
+                      <p><img className='ost-list-img' src={`/img/ost/${this.props.ost}.png`} /></p>
                       <div className='ost-list-text text-wrap'>
                         {this.state.ost.title}
                       </div>
@@ -207,6 +211,74 @@ export default class OstDetail extends React.Component {
           </Container>
         </div>
       </div>
+    )
+  }
+}
+
+class TrackList extends React.Component {
+  state={ current: 0 }
+  render () {
+    return (
+      <Col lg={6}>
+        <div className='blackblock d-inline-block'>
+          <Row>
+            <Col>
+              <h1 className='text-center ost-title'>TRACKLIST</h1>
+            </Col>
+          </Row>
+          <Row style={{ paddingLeft: '15px', paddingRight: '15px' }}>
+            {this.props.discs.map(({ number }) => (
+              <Col key={number} className='px-0 text-center'>
+                <div
+                  onClick={() => this.setState({ current: number })}
+                  style={{
+                    padding: '8px 8px 8px 8px',
+                    cursor: this.state.current === number ? '' : 'pointer',
+                    borderStyle: 'solid',
+                    borderWidth: '2px 2px 2px 2px',
+                    borderColor: '#efefef',
+                    borderBottomWidth: this.state.current === number ? '0px' : '2px'
+                  }}
+                >
+                Disc {number + 1}
+                </div>
+              </Col>
+            ))}
+          </Row>
+          <Row>
+            <Col>
+              <div style={{
+                padding: '5px 5px 5px 5px',
+                borderStyle: 'solid',
+                borderWidth: '0px 2px 2px 2px',
+                borderColor: '#efefef'
+              }}
+              >
+                <table cellSpacing='0' cellPadding='1' border='0'>
+                  <tbody>
+                    {this.props.discs[this.state.current].body.split('\n').map((e, i) => {
+                      const [track, length] = e.split(',')
+                      return (
+                        <tr key={i}>
+                          <td className='smallfont' style={{ padding: '8px' }}>
+                            <span className='label'>{i + 1}</span>
+                          </td>
+                          <td className='smallfont' width='100%' style={{ padding: '8px' }}>{track}</td>
+                          <td className='smallfont' nowrap='nowrap' align='right' style={{ padding: '8px' }}>
+                            <span className='time'>{length}</span>
+                          </td>
+                        </tr>
+
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </Col>
+          </Row>
+        </div>
+      </Col>
+
     )
   }
 }
