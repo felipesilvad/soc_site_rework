@@ -58,7 +58,15 @@ class Links extends React.Component {
                   <Col md={4}>
                     <FormGroup>
                       <Label>Provider:</Label>
-                      <Input required name={`links[${category}][links][${link}][provider]`} type='text' />
+                      <Select
+                        name={`links[${category}][links][${link}][provider]`} options={[
+                          { value: 'MEGA', label: 'MEGA' },
+                          { value: 'MEDIAFIRE', label: 'MediaFire' },
+                          { value: 'GOOGLEDRIVE', label: 'Google Drive' },
+                          { value: 'BEDRIVE', label: 'BeDrive' },
+                          { value: 'MIRROR', label: 'Mirror' }
+                        ]} styles={{ option: () => ({ color: 'black' }) }}
+                      />
                     </FormGroup>
                   </Col>
                   <Col md={4}>
