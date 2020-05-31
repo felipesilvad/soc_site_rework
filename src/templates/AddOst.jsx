@@ -220,7 +220,8 @@ export default class AddOst extends React.Component {
         $games: [ID],
         $discs: [DiscInput],
         $related: [ID],
-        $available: [LinkInput]
+        $available: [LinkInput],
+        $vgmdb: String
       ){
         createOst(
           title: $title, 
@@ -236,7 +237,8 @@ export default class AddOst extends React.Component {
           games: $games,
           discs: $discs,
           related: $related,
-          available: $available
+          available: $available,
+          vgmdb: $vgmdb
         )
         {
           id
@@ -371,7 +373,18 @@ export default class AddOst extends React.Component {
                 <Select required isMulti name='types' options={this.state.types.map(c => ({ value: c.id, label: c.name }))} styles={{ option: () => ({ color: 'black' }) }} />
               </FormGroup>
             </Col>
+
             <Col md={4}>
+              <FormGroup>
+                <Label for='vgmdb'>VGMdb:</Label>
+                <Input name='vgmdb' type='text' />
+              </FormGroup>
+            </Col>
+            
+          </Row>
+
+          <Row>
+          <Col md={4}>
               <FormGroup>
                 <Label for='cover'>Cover:</Label>
                 <Input required name='cover' type='file' accept='image/*' />
