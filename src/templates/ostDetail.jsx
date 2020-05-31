@@ -10,7 +10,9 @@ export default class OstDetail extends React.Component {
       games: [],
       artists: [],
       classes: [],
-      types: []
+      types: [],
+      available: [],
+      links: []
     }
   }
 
@@ -39,6 +41,18 @@ export default class OstDetail extends React.Component {
           }
           types {
             name
+          }
+          available {
+            url
+            provider
+          }
+          links{
+            title
+            links{
+              url
+              provider
+              custom
+            }
           }
         }
       }
@@ -116,144 +130,62 @@ export default class OstDetail extends React.Component {
 
             <hr className='style2 style-white' />
 
-            <div className='row'>
+            <Row className='row'>
               <div className='col-lg-6'>
                 <div className='blackblock h-100 d-inline-block'>
                   <h1 className='text-center ost-title'>TRACKLIST</h1>
                   <h6 className='tracklist'>{this.state.ost.tracklist}</h6>
                 </div>
               </div>
-              <div className='col-lg-6'>
-                <div className='blackblock'>
-                  {this.state.ost.vgmdb ? (
-                    <>
-                      <p className='pl-2'>Check album at:</p>
-                      <a target='_blank' rel='noopener noreferrer' href={this.state.ost.vgmdb}><img width='100px' src='https://vgmdb.net/db/img/vgmdblogo.png' /></a>
-                    </>) : null}
+              <Col lg={6} className='blackblock px-10px pt-0'>
+                {this.state.ost.vgmdb ? (
+                  <Row>
+                    <p className='pl-2'>Check album at:</p>
+                    <a target='_blank' rel='noopener noreferrer' href={this.state.ost.vgmdb}><img width='100px' src='https://vgmdb.net/db/img/vgmdblogo.png' /></a>
+                  </Row>) : null}
 
-                  <div className='red-block mt-2'>
-                    <h1 className='text-center ost-title'>Buy The Original Soundtrack to support the artists</h1>
-
-                    <table>
-                      <tr>
-                        {/* % if this.state.ost.amazon_html % */}
-                        <td className='amazon-html'>
-                          <div>{this.state.ost.amazon_html}</div>
-                        </td>
-                        {/* % endif % */}
-                        {/* % if this.state.ost.amazon_link % */}
-                        <td>
-                          <div className='links-list'>
-                            <div className='links-list-items'>
-                              {/* % if this.state.ost.amazon_link % */}
-                              <a target='_blank' href='{{this.state.ost.amazon_link}'><img className='link-img' src='/static/amazon_link.jpg' /></a>
-                              {/* % endif % */}
-                            </div>
-                            <div className='links-list-items'>
-                              {/* % if this.state.ost.amazon_jp % */}
-                              <a target='_blank' href='{{this.state.ost.amazon_jp}'><img className='link-img' src='/static/amazon_jp.jpg' /></a>
-                              {/* % endif % */}
-                            </div>
-                            <div className='links-list-items'>
-                              {/* % if this.state.ost.play_asia_link % */}
-                              <a target='_blank' href='{{this.state.ost.play_asia_link}'><img className='link-img' src='/static/play_asia_link.jpg' /></a>
-                              {/* % endif % */}
-                            </div>
-                            <div className='links-list-items'>
-                              {/* % if this.state.ost.cd_japan_link % */}
-                              <a target='_blank' href='{{this.state.ost.cd_japan_link}'><img className='link-img' src='/static/cd_japan_link.jpg' /></a>
-                              {/* % endif % */}
-                            </div>
-                            <div className='links-list-items'>
-                              {/* % if this.state.ost.spotify_link % */}
-                              <a target='_blank' href='{{this.state.ost.spotify_link}'><img className='link-img' src='/static/spotify_link.jpg' /></a>
-                              {/* % endif % */}
-                            </div>
-                            <div className='links-list-items'>
-                              {/* % if this.state.ost.google_play % */}
-                              <a target='_blank' href='{{this.state.ost.google_play}'><img className='link-img' src='/static/google_play.jpg' /></a>
-                              {/* % endif % */}
-                            </div>
-                            <div className='links-list-items'>
-                              {/* % if this.state.ost.steam % */}
-                              <a target='_blank' href='{{this.state.ost.steam}'><img className='link-img' src='/static/steam.jpg' /></a>
-                              {/* % endif % */}
-                            </div>
-                            <div className='links-list-items'>
-                              {/* % if this.state.ost.mora % */}
-                              <a target='_blank' href='{{this.state.ost.mora}'><img className='link-img' src='/static/mora.jpg' /></a>
-                              {/* % endif % */}
-                            </div>
-                            <div className='links-list-items'>
-                              {/* % if this.state.ost.itunes % */}
-                              <a target='_blank' href='{{this.state.ost.itunes}'><img className='link-img' src='/static/itunes.jpg' /></a>
-                              {/* % endif % */}
-                            </div>
-                            <div className='links-list-items'>
-                              {/* % if this.state.ost.ototoy % */}
-                              <a target='_blank' href='{{this.state.ost.ototoy}'><img className='link-img' src='/static/ototoy.jpg' /></a>
-                              {/* % endif % */}
-                            </div>
+                {this.state.ost.available.length > 0 ? (
+                  <Row className='mt-2'>
+                    <Col>
+                      <div className='red-block links-list' style={{ paddingLeft: '15px', paddingTop: '10px', paddingRight: '15px', paddingBottom: '10px' }}>
+                        <h1 className='text-center ost-title'>Buy The Original Soundtrack to support the artists</h1>
+                        <hr className='style-white w-100 mt-0' />
+                        {this.state.ost.available.map(({ url, provider }) => (
+                          <div className='links-list-items' key={provider}>
+                            <a target='_blank' rel='noopener noreferrer' href={url}><img className='link-img' src={`/img/provider/${provider}.jpg`} /></a>
                           </div>
-                        </td>
-                        {/* % endif % */}
-                      </tr>
-                    </table>
+                        ))}
+                      </div>
+                    </Col>
+                  </Row>) : null}
 
-                  </div>
-
-                  <div className='mt-3'>
-                    <div className='col-xs-1 text-center'><h2 className='text-center ost-title'>MP3</h2></div>
-                    {/* % if this.state.ost.download_link_1 % */}
-                    <div className='col-xs-1 text-center'>{this.state.ost.download_link_choices_1}</div>
-                    <div className='col-xs-1 text-center'>
-                      <button className='download-button col-lg-6'><a target='_blank' className='dla' href='{this.state.ost.download_link_1 }'>DOWNLOAD</a></button>
-                      <button className='download-button-soc col-lg-6'><a target='_blank' className='dlas' href='{this.state.ost.download_link_1_soc }'>DOWNLOAD</a></button>
-                    </div>
-                    {/* % endif % */}
-                    {/* % if this.state.ost.download_link_2 % */}
-                    <div className='col-xs-1 text-center'>{this.state.ost.download_link_choices_2}</div>
-                    <div className='col-xs-1 text-center'>
-                      <button className='download-button col-lg-6'><a target='_blank' className='dla' href='{this.state.ost.download_link_2 }'>DOWNLOAD</a></button>
-                      <button className='download-button-soc col-lg-6'><a target='_blank' className='dlas' href='{this.state.ost.download_link_2_soc }'>DOWNLOAD</a></button>
-                    </div>
-                    {/* % endif % */}
-                    {/* % if this.state.ost.download_link_3 % */}
-                    <div className='col-xs-1 text-center'>{this.state.ost.download_link_choices_3}</div>
-                    <div className='col-xs-1 text-center'>
-                      <button className='download-button col-lg-6'><a target='_blank' className='dla' href='{this.state.ost.download_link_3 }'>DOWNLOAD</a></button>
-                      <button className='download-button-soc col-lg-6'><a target='_blank' className='dlas' href='{this.state.ost.download_link_3_soc }'>DOWNLOAD</a></button>
-                    </div>
-                    {/* % endif % */}
-                    {/* % if this.state.ost.download_link_1_flac or this.state.ost.download_link_2_flac or this.state.ost.download_link_3_flac % */}
-                    <div className='col-xs-1 text-center mt-3'><h2 className='text-center ost-title'>FLAC</h2></div>
-                    {/* % endif % */}
-                    {/* % if this.state.ost.download_link_1_flac % */}
-                    <div className='col-xs-1 text-center'>{this.state.ost.download_link_choices_1_flac}</div>
-                    <div className='col-xs-1 text-center'>
-                      <button className='download-button col-lg-6'><a target='_blank' className='dla' href='{this.state.ost.download_link_1_flac }'>DOWNLOAD</a></button>
-                      <button className='download-button-soc col-lg-6'><a target='_blank' className='dlas' href='{this.state.ost.download_link_1_soc_flac }'>DOWNLOAD</a></button>
-                    </div>
-                    {/* % endif % */}
-                    {/* % if this.state.ost.download_link_2_flac % */}
-                    <div className='col-xs-1 text-center'>{this.state.ost.download_link_choices_2_flac}</div>
-                    <div className='col-xs-1 text-center'>
-                      <button className='download-button col-lg-6'><a target='_blank' className='dla' href='{this.state.ost.download_link_2_flac }'>DOWNLOAD</a></button>
-                      <button className='download-button-soc col-lg-6'><a target='_blank' className='dlas' href='{this.state.ost.download_link_2_soc_flac }'>DOWNLOAD</a></button>
-                    </div>
-                    {/* % endif % */}
-                    {/* % if this.state.ost.download_link_3_flac % */}
-                    <div className='col-xs-1 text-center'>{this.state.ost.download_link_choices_3_flac}</div>
-                    <div className='col-xs-1 text-center'>
-                      <button className='download-button col-lg-6'><a target='_blank' className='dla' href='{this.state.ost.download_link_3_flac }'>DOWNLOAD</a></button>
-                      <button className='download-button-soc col-lg-6'><a target='_blank' className='dlas' href='{this.state.ost.download_link_3_soc_flac }'>DOWNLOAD</a></button>
-                    </div>
-                    {/* % endif % */}
-                  </div>
-
-                </div>
-
-              </div>
+                {this.state.ost.links.length > 0 ? (this.state.ost.links.map(({ links, title, small }, i) => (
+                  <Row className='mt-3' key={i}>
+                    <Col>
+                      <Row>
+                        <Col md={12}>
+                          {small
+                            ? <h5 className='text-center'>{title}</h5>
+                            : <h2 className='text-center'>{title}</h2>}
+                        </Col>
+                      </Row>
+                      <Row className='text-center'>
+                        {links.map(({ url, provider, custom }, i) => (
+                          <Col key={i} md={4} className='px-3 mx-auto'>
+                            <Button
+                              className='download-button w-100' style={{
+                                backgroundColor: custom ? '#c321ff' : '#2185f5',
+                                borderColor: custom ? '#c321ff' : '#2185f5'
+                              }}
+                            >
+                              <a target='_blank' rel='noopener noreferrer' className='dla' href={url}>{provider}</a>
+                            </Button>
+                          </Col>
+                        ))}
+                      </Row>
+                    </Col>
+                  </Row>))) : null}
+              </Col>
 
               <div className='blackblock w-100 m-3'><h1 className='text-center ost-title'>RELATED SOUNDTRACKS</h1></div>
 
@@ -271,8 +203,7 @@ export default class OstDetail extends React.Component {
                 </div>
                 {/* % endfor % */}
               </div>
-
-            </div>
+            </Row>
           </Container>
         </div>
       </div>
