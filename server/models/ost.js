@@ -8,7 +8,8 @@ module.exports = (sequelize, DataTypes) => {
     title: DataTypes.STRING,
     subTitle: DataTypes.STRING,
     releaseDate: DataTypes.DATEONLY,
-    label: DataTypes.STRING
+    label: DataTypes.STRING,
+    vgmdb: DataTypes.STRING
   },
   {
     freezeTableName: true
@@ -23,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     Ost.belongsToMany(models.game, { through: 'Ost_Game' })
     Ost.hasMany(models.disc)
     Ost.hasMany(models.linkCategory)
+    Ost.hasMany(models.available)
     Ost.belongsToMany(Ost, { through: 'related_ost', as: 'related' })
   }
   return Ost

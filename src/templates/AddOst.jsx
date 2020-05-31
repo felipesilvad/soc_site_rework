@@ -6,7 +6,7 @@ import { Button, Col, Row, Form, FormGroup, Label, Input } from 'reactstrap'
 import { toast } from 'react-toastify'
 import getBase64 from './getBase64'
 
-export class Links extends React.Component {
+class Links extends React.Component {
   state={ links: [[[]]] }
   render () {
     return (
@@ -77,6 +77,57 @@ export class Links extends React.Component {
               )}
             </Col>
           )}
+        </Row>
+      </>
+    )
+  }
+}
+
+class AvailableLinks extends React.Component {
+  state={ links: [[]] }
+  render () {
+    return (
+      <>
+        <Row>
+          <Col>
+            <Button
+              color='primary' onClick={() => {
+                const links = this.state.links
+                links.push([])
+                this.setState({ links: links })
+              }}
+            >Add Available link
+            </Button>
+          </Col>
+        </Row>
+
+        <Row>
+          {this.state.links.map((item, i) => (
+            <Col key={i} md={6}>
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label>Provider:</Label>
+                    <Select
+                      name={`available[${i}][provider]`} options={[
+                        { value: 'MEGA', label: 'MEGA' },
+                        { value: 'MEDIAFIRE', label: 'MediaFire' },
+                        { value: 'GOOGLEDRIVE', label: 'Google Drive' },
+                        { value: 'BEDRIVE', label: 'BeDrive' },
+                        { value: 'MIRROR', label: 'Mirror' }
+                      ]} styles={{ option: () => ({ color: 'black' }) }}
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label>Url:</Label>
+                    <Input required name={`available[${i}][url]`} type='text' />
+                  </FormGroup>
+                </Col>
+              </Row>
+            </Col>
+          ))}
         </Row>
       </>
     )
@@ -160,7 +211,8 @@ export default class AddOst extends React.Component {
         $platforms: [ID],
         $games: [ID],
         $discs: [DiscInput],
-        $related: [ID]
+        $related: [ID],
+        $available: [LinkInput]
       ){
         createOst(
           title: $title, 
@@ -175,7 +227,8 @@ export default class AddOst extends React.Component {
           platforms: $platforms,
           games: $games,
           discs: $discs,
-          related: $related
+          related: $related,
+          available: $available
         )
         {
           id
@@ -338,6 +391,10 @@ export default class AddOst extends React.Component {
           <Row form className='mt-3'>
             {discs}
           </Row>
+
+          <hr className='style2 style-white' />
+
+          <AvailableLinks />
 
           <hr className='style2 style-white' />
 

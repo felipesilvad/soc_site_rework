@@ -6,7 +6,7 @@ import { Button, Col, Row, Form, FormGroup, Label, Input } from 'reactstrap'
 import getBase64 from './getBase64'
 
 export default class AddGame extends React.Component {
-  state={ publishers: [], series: [] }
+  state={ publishers: [], series: [], platforms: [] }
 
   componentDidMount () {
     const query = gql`
@@ -16,6 +16,10 @@ export default class AddGame extends React.Component {
           name
         }
         publishers {
+          id
+          name
+        }
+        platforms{
           id
           name
         }
@@ -33,25 +37,17 @@ export default class AddGame extends React.Component {
     game.cover = await getBase64(e.target.elements.cover.files[0])
 
     const query = gql`
-    mutation CreateGame($cover:String, $releaseDate:String!, $slug:String!, $name:String!, $series: [String]!, $publishers:[ID]!){
+    mutation CreateGame($cover:String, $releaseDate:String!, $slug:String!, $name:String!, $series: [String]!, $publishers:[ID]!, $platforms:[ID]){
       createGame(
         name: $name
         slug: $slug
         series: $series
         publishers: $publishers   
         releaseDate: $releaseDate
-        cover: $cover
-        ) {
+        cover: $cover,
+        platforms: $platforms
+      ) {
           slug
-          name
-          publishers {
-            id
-            name
-          }
-          series {
-            slug
-            name
-          }
         }
       }
 `
@@ -102,6 +98,14 @@ export default class AddGame extends React.Component {
                 <Select isMulti name='publishers' options={this.state.publishers.map(c => ({ value: c.id, label: c.name }))} styles={{ option: () => ({ color: 'black' }) }} />
               </FormGroup>
             </Col>
+            <Col md={4}>
+              <FormGroup>
+                <Label for='platforms'>Platforms:</Label>
+                <Select isMulti name='platforms' options={this.state.platforms.map(c => ({ value: c.id, label: c.name }))} styles={{ option: () => ({ color: 'black' }) }} />
+              </FormGroup>
+            </Col>
+          </Row>
+          <Row>
             <Col md={4}>
               <FormGroup>
                 <Label for='cover'>Cover:</Label>

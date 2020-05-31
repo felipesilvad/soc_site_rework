@@ -1,6 +1,18 @@
 const base64Img = require('base64-img')
 const { Op } = require('sequelize')
 
+const img = (data, path, file) => {
+  return new Promise((resolve, reject) => {
+    base64Img.img(data, path, file, function (err, filepath) {
+      if (err) {
+        console.log(err)
+        return reject(err)
+      }
+      resolve(filepath)
+    })
+  })
+}
+
 module.exports = {
   Ost: {
     artists: (parent, args, context, info) => parent.getArtists(),
@@ -10,7 +22,8 @@ module.exports = {
     games: (parent, args, context, info) => parent.getGames(),
     links: (parent, args, context, info) => parent.getLinkCategories(),
     discs: (parent, args, context, info) => parent.getDiscs(),
-    related: (parent, args, context, info) => parent.getRelated()
+    related: (parent, args, context, info) => parent.getRelated(),
+    available: (parent) => parent.getAvailables()
   },
 
   LinkCategory: {
@@ -19,7 +32,8 @@ module.exports = {
 
   Game: {
     series: (parent, args, context, info) => parent.getSeries(),
-    publishers: (parent, args, context, info) => parent.getPublishers()
+    publishers: (parent, args, context, info) => parent.getPublishers(),
+    platforms: (parent, args, context, info) => parent.getPlatforms()
   },
 
   Series: {
@@ -58,36 +72,39 @@ module.exports = {
   },
 
   Mutation: {
-    createArtist: async (parent, data, { db }, info) => {
-      const result = await db.artist.create(data)
-      return result.dataValues
+    createArtist: (parent, data, { db }, info) => db.artist.create(data),
+    createPlatform: (parent, data, { db }, info) => db.platform.create(data),
+    createPublisher: (parent, data, { db }, info) => db.publisher.create(data),
+    createSeries: (parent, data, { db }, info) => {
+      return db.sequelize.transaction(async t1 => {
+        const result = await db.series.create(data)
+        await img(data.cover, '../public/img/series', result.dataValues.slug)
+        return result
+      })
     },
-    createPlatform: async (parent, data, { db }, info) => {
-      const result = await db.platform.create(data)
-      return result.dataValues
-    },
-    createPublisher: async (parent, data, { db }, info) => {
-      const result = await db.publisher.create(data)
-      return result.dataValues
-    },
-    createSeries: async (parent, data, { db }, info) => {
-      const result = await db.series.create(data)
-      base64Img.imgSync(data.cover, '../public/img/series', result.dataValues.slug)
-      return result.dataValues
-    },
-    createGame: async (parent, data, { db }, info) => {
-      const game = await db.game.create(data)
-      await Promise.all([
-        game.setSeries(data.series),
-        game.setPublishers(data.publishers)
-      ])
-      base64Img.imgSync(data.cover, '../public/img/game', game.dataValues.slug)
-
-      return game.dataValues
+    createGame: (parent, data, { db }, info) => {
+      return db.sequelize.transaction(t2 => {
+        let gameInstance = null
+        return db.game.create(data).then(game => {
+          gameInstance = game
+          return Promise.all([
+            gameInstance.setSeries(data.series),
+            gameInstance.setPublishers(data.publishers),
+            gameInstance.setPlatforms(data.platforms)
+          ])
+        }).then(() => {
+          img(data.cover, '../public/img/game', data.slug)
+            .then(() => {
+              return gameInstance
+            })
+        })
+      })
     },
     createOst: (parent, data, { db }, info) => {
-      db.sequelize.transaction(t1 => {
-        return db.ost.create(data).then(ost => {
+      return db.sequelize.transaction(t1 => {
+        let ost = null
+        db.ost.create(data).then(ostInstance => {
+          ost = ostInstance
           return Promise.all([
             Promise.all(
               (data.artists || []).map(a => db.artist.findOrCreate(
@@ -103,17 +120,19 @@ module.exports = {
                 return Promise.all(category.links.map(link => linkCategory.createLink(link)))
               })
             })),
+            Promise.all(data.available.map(link => ost.createAvailable(link))),
             Promise.all(data.discs.map(d => ost.createDisc(d))),
             ost.setPlatforms(data.platforms || []),
             ost.setGames(data.games || []),
             ost.setTypes(data.types),
             ost.setClasses(data.classes),
-            ost.setRelated(data.related || []),
-            base64Img.imgSync(data.cover, '../public/img/ost', ost.dataValues.id)
-          ])
+            ost.setRelated(data.related || [])
+          ]).then(() => {
+            img(data.cover, '../public/img/ost', ost.dataValues.id).then(() => {
+              return ost
+            })
+          })
         })
-      }).then(result => {
-        return result
       })
     }
   }

@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.min.css'
 
 import AddForms from './templates/AddForms'
+import OstDetail from './templates/OstDetail'
 
 import ApolloClient from 'apollo-boost'
 
@@ -11,7 +12,8 @@ import { useRoutes } from 'hookrouter'
 
 const routes = {
   '/': () => <AddForms client={client} />,
-  '/admin/ost': () => <AddForms client={client} />
+  '/admin/ost': () => <AddForms client={client} />,
+  '/ost/:id': ({ id }) => <OstDetail ost={id} client={client} />
 }
 
 const client = new ApolloClient({

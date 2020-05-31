@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     Game.belongsToMany(models.publisher, { through: 'Publisher_Game' })
     Game.belongsToMany(models.ost, { through: 'Ost_Game' })
     Game.belongsToMany(models.series, { through: 'Series_Game' })
+    Game.belongsToMany(models.platform, { through: 'Game_Platform' })
   }
   return Game
 }

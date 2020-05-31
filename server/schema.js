@@ -5,8 +5,10 @@ module.exports = `
         subTitle: String!
         releaseDate: String!
         label: String!
-        discs: [Disc!]!
-        links: [LinkCategory!]!
+        vgmdb: String
+        available: [Available]!
+        discs: [Disc]!
+        links: [LinkCategory]!
         artists: [Artist]!
         classes: [Class!]!
         types: [Type!]!
@@ -44,6 +46,11 @@ module.exports = `
         links: [Link]
     }
 
+    type Available {
+        provider: String
+        url: String
+    }
+
     type Link {
         provider: String
         custom: Boolean
@@ -67,6 +74,7 @@ module.exports = `
         name: String
         releaseDate: String
         publishers: [Publisher]
+        platforms: [Platform]
         osts: [Ost]
         series: [Series]
     }
@@ -114,13 +122,15 @@ module.exports = `
         createPlatform(name: String): Platform!
         createPublisher(name: String): Publisher!
         createSeries(slug: String, name:String, cover:String): Series!
-        createGame(releaseDate:String, slug:String, name:String, publishers:[ID], series:[String], cover:String): Game!
+        createGame(releaseDate:String, slug:String, name:String, publishers:[ID], series:[String], platforms:[ID], cover:String): Game!
         createOst(
             title: String, 
             subTitle: String, 
             cover: String,
             releaseDate: String,
             label: String,
+            vgmdb: String,
+            available: [LinkInput],
             links: [CategoryInput],
             artists: [String],
             classes: [ID],

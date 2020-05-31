@@ -6,7 +6,6 @@ module.exports = (sequelize, DataTypes) => {
 
   LinkCategory.associate = models => {
     LinkCategory.hasMany(models.link)
-    LinkCategory.belongsTo(models.ost)
   }
   return LinkCategory
 }
