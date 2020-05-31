@@ -94,7 +94,7 @@ export default class OstDetail extends React.Component {
                         <tr>
                           <th>Platforms</th>
                           <td>
-                            {this.state.ost.platforms.map(({ id, name }) => <a key={id} href='/platform/{{platform.slug}'>{this.props.platform.title}</a>)}
+                            {this.state.ost.platforms.map(({ id, name }) => <a key={id} href={`/platform/${id}`}>{name}</a>)}
                           </td>
                         </tr>
                       ) : null}
