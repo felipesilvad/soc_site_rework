@@ -125,11 +125,16 @@ class AvailableLinks extends React.Component {
                     <Label>Provider:</Label>
                     <Select
                       name={`available[${i}][provider]`} options={[
-                        { value: 'MEGA', label: 'MEGA' },
-                        { value: 'MEDIAFIRE', label: 'MediaFire' },
-                        { value: 'GOOGLEDRIVE', label: 'Google Drive' },
-                        { value: 'BEDRIVE', label: 'BeDrive' },
-                        { value: 'MIRROR', label: 'Mirror' }
+                        { value: 'amazon',  label: 'Amazon'},
+                        { value: 'amazon_jp',  label: 'Amazon JP'},
+                        { value: 'play_asia',  label: 'Play Asia'},
+                        { value: 'cd_japan',  label: 'CD Japan'},
+                        { value: 'spotify',  label: 'Spotify'},
+                        { value: 'google_play',  label: 'Google Play'},
+                        { value: 'steam',  label: 'Steam'},
+                        { value: 'mora',  label: 'Mora'},
+                        { value: 'apple_music',  label: 'Apple Music'},
+                        { value: 'ototoy',  label: 'OTOTOY'},
                       ]} styles={{ option: () => ({ color: 'black' }) }}
                     />
                   </FormGroup>
