@@ -23,9 +23,10 @@ class Links extends React.Component {
             </Button>
           </Col>
         </Row>
-        <Row>
-          {this.state.links.map((a, category) =>
-            <Col md={6} key={category}>
+        {this.state.links.map((a, category) =>
+          <Row key={category}>
+
+            <Col>
               <Row>
                 <Col md={6}>
                   <FormGroup className='mt-3'>
@@ -55,7 +56,7 @@ class Links extends React.Component {
               </Row>
               {this.state.links[category].map((l, link) =>
                 <Row key={link}>
-                  <Col md={4}>
+                  <Col md={3}>
                     <FormGroup>
                       <Label>Provider:</Label>
                       <Select
@@ -69,13 +70,19 @@ class Links extends React.Component {
                       />
                     </FormGroup>
                   </Col>
-                  <Col md={4}>
+                  <Col md={3}>
                     <FormGroup>
                       <Label>Url:</Label>
                       <Input required name={`links[${category}][links][${link}][url]`} type='text' />
                     </FormGroup>
                   </Col>
-                  <Col md={4} className='mt-auto mb-3'>
+                  <Col md={3}>
+                    <FormGroup>
+                      <Label>Direct Url:</Label>
+                      <Input required name={`links[${category}][links][${link}][directUrl]`} type='text' />
+                    </FormGroup>
+                  </Col>
+                  <Col md={3} className='mt-auto mb-3'>
                     <div class='form-check'>
                       <Input type='checkbox' name={`links[${category}][links][${link}][custom]`} className='form-check-input' />
                       <Label className='form-check-label' for={`links[${category}][links][${link}][custom]`}>Custom</Label>
@@ -84,8 +91,8 @@ class Links extends React.Component {
                 </Row>
               )}
             </Col>
-          )}
-        </Row>
+          </Row>
+        )}
       </>
     )
   }
@@ -380,11 +387,11 @@ export default class AddOst extends React.Component {
                 <Input name='vgmdb' type='text' />
               </FormGroup>
             </Col>
-            
+
           </Row>
 
           <Row>
-          <Col md={4}>
+            <Col md={4}>
               <FormGroup>
                 <Label for='cover'>Cover:</Label>
                 <Input required name='cover' type='file' accept='image/*' />

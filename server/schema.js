@@ -38,6 +38,7 @@ module.exports = `
         provider: String
         custom: Boolean
         url: String
+        directUrl: String
     }
 
     type LinkCategory {
@@ -55,6 +56,7 @@ module.exports = `
         provider: String
         custom: Boolean
         url: String
+        directUrl: String
     }
 
     type Artist {

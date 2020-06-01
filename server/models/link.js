@@ -1,6 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const Link = sequelize.define('link', {
     url: DataTypes.STRING,
+    directUrl: DataTypes.STRING,
     provider: DataTypes.STRING,
     custom: DataTypes.BOOLEAN
   })
